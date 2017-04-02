@@ -53,15 +53,21 @@ public class WikiCrawler {
 	private static ArrayList<String> extractLinksFromUrlString(String urlString) throws IOException {
 		String pageDocument = urlStringToDocString(BASE_URL + urlString);
 		ArrayList<String> list = new ArrayList<String>();
-		boolean hasNotReachedFirstParagraph = true;
-		for(String token : pageDocument.split("\"")){
-			token = token.trim();
-			if(hasNotReachedFirstParagraph){ // Do not check tokens until after paragraph has been reached
-				if(token.contains("<p>") || token.contains("<P>")){
-					hasNotReachedFirstParagraph = false;
-				}
-				continue;
-			}
+		//boolean hasNotReachedFirstParagraph = true;
+		int firstParagraphLocation = pageDocument.indexOf("<p>");
+		
+		if((-1 == firstParagraphLocation) || (firstParagraphLocation > pageDocument.indexOf("<P>") && pageDocument.indexOf("<P>") != -1)){
+			firstParagraphLocation =  pageDocument.indexOf("<P>");
+		}
+		
+		pageDocument = pageDocument.substring(firstParagraphLocation);
+		String[] tokens = pageDocument.split("href=\"");
+		for(String token : tokens){
+			if (token == tokens[0]) continue;
+			//System.out.println(token);
+			token = token.substring(0, token.indexOf("\""));
+			//System.out.println(token);
+			
 			if(token.length() <= 7)
 				continue;
 			
@@ -121,12 +127,11 @@ public class WikiCrawler {
 	private void parseData(){
 		ArrayList<String> toRemove;
 		for(linkData dataBlock: visitedUrlData){
-			System.out.println(dataBlock.startLinkString);
+			//System.out.println(dataBlock.startLinkString);
 			toRemove = new ArrayList<String>();
 			for(String link : dataBlock.endLinksArrayList){
 				if(!vistedUrls.contains(link) || link.equalsIgnoreCase(dataBlock.startLinkString)){
 					toRemove.add(link);
-					System.out.println(link);
 				}
 			}
 			dataBlock.endLinksArrayList.removeAll(toRemove);
@@ -173,8 +178,11 @@ public class WikiCrawler {
 	/*Main just for testing. Remove when finished.
 	 */
 	public static void main(String[] args){
-		WikiCrawler wc = new WikiCrawler("/wiki/Complexity_theory", 20, "TestOutput.txt");
+		
+		long systemTimeStart = System.nanoTime();
+		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 500, "WikiCS.txt");
 		wc.crawl();
+		System.out.println((System.nanoTime() - systemTimeStart)/1000000000);
 	}
 }
 

@@ -3,9 +3,17 @@
  */
 
 import java.util.ArrayList;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.Scanner;
 public class GraphProcessor {
-	
+
+	private ArrayList<ArrayList<String>> graph;
+	private ArrayList<ArrayList<String>> reverseGraph;
+	private ArrayList<ArrayList<String>> SCCList;
 	/*
 	 * Constructor. graphData holds the absolute path of a file that stores a directed graph. 
 	 * This file will be of the following format: First line indicates number of vertices.
@@ -14,13 +22,36 @@ public class GraphProcessor {
 	 * the following public methods run efficiently.
 	 */
 	GraphProcessor(String graphData) {
+		generateGraph(graphData);
+		generateReverseGraph();
+		generateSCCList();
+	}
+	
+	/* Generates graph based on file data
+	 * 
+	 */
+	private void generateGraph(String graphData){
+		
+	}
+	
+	/* Makes the reverse of the other graph.
+	 * Must be called after generateGraph
+	 */
+	private void generateReverseGraph(){
+		
+	}
+	
+	/* Makes ArrayList of SCCs
+	 * Must be called after generateGraph / generateReverseGraph
+	 */
+	private void generateSCCList(){
 		
 	}
 	
 	/*
 	 * Returns the out degree of v.
 	 */
-	int outDegree(String v) {
+ 	int outDegree(String v) {
 		return 0;
 	}
 	
