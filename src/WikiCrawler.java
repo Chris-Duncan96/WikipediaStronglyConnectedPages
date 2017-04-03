@@ -186,6 +186,7 @@ public class WikiCrawler {
 	}
 }
 
+/*
 final class linkData{
 	public String startLinkString;
 	public ArrayList<String> endLinksArrayList;
@@ -205,3 +206,4 @@ final class linkData{
 		return endLinksArrayList.contains(link);
 	}
 }
+*/

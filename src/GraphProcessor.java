@@ -11,9 +11,19 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 public class GraphProcessor {
 
-	private ArrayList<ArrayList<String>> graph;
-	private ArrayList<ArrayList<String>> reverseGraph;
+	private ArrayList<linkData> graph;
+	private int graphSize;
+	private ArrayList<linkData> reverseGraph;
 	private ArrayList<ArrayList<String>> SCCList;
+	
+	public static void main(String[] args) throws IOException{
+		try{
+			GraphProcessor gp = new GraphProcessor("TestOutput.txt");
+		}
+		catch(Exception e){
+			
+		}
+	}
 	/*
 	 * Constructor. graphData holds the absolute path of a file that stores a directed graph. 
 	 * This file will be of the following format: First line indicates number of vertices.
@@ -21,18 +31,57 @@ public class GraphProcessor {
 	 * are represented as strings. This class should create efficient data structures so that 
 	 * the following public methods run efficiently.
 	 */
-	GraphProcessor(String graphData) {
+	GraphProcessor(String graphData) throws IOException {
+		graph = new ArrayList<linkData>();
 		generateGraph(graphData);
 		generateReverseGraph();
-		generateSCCList();
+		//generateSCCList();
 	}
 	
 	/* Generates graph based on file data
 	 * 
 	 */
-	private void generateGraph(String graphData){
+	private void generateGraph(String graphData) throws IOException{
+		File inputFile = new File(graphData);
+		Scanner fileReader = new Scanner(inputFile);
+		String nextLine;
+		String[] currentLineTokens;
+		linkData currentVertex = null;
 		
+		nextLine = fileReader.nextLine(); //TODO This  the number of vertexes. How can this be used?
+		graphSize = Integer.parseInt(nextLine);
+		
+		while(fileReader.hasNextLine()){
+			nextLine = fileReader.nextLine();
+			if("" == nextLine.trim()){
+				break;
+			}
+			currentLineTokens = nextLine.split(" ");
+			
+			if(null != currentVertex && currentLineTokens[0] != currentVertex.startLinkString){
+				graph.add(currentVertex);
+			}
+			
+			if(null == currentVertex || currentLineTokens[0] != currentVertex.startLinkString){
+				currentVertex = new linkData(currentLineTokens[0], new ArrayList<String>());
+			}
+			//System.out.println(currentVertex.startLinkString);
+			currentVertex.endLinksArrayList.add(currentLineTokens[1]);	
+		}
+		
+		graph.add(currentVertex);
+		fileReader.close();
 	}
+	
+	private void printGraph(){
+		System.out.println(graphSize);
+		for(linkData vertex: graph){
+			for(String link: vertex.endLinksArrayList){
+				System.out.println(vertex.startLinkString + " " + link);
+			}
+		}
+	}
+	
 	
 	/* Makes the reverse of the other graph.
 	 * Must be called after generateGraph
