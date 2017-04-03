@@ -9,13 +9,21 @@ class linkData{
 		endLinksArrayList = end;
 	}
 	
-	@Override
-	public boolean equals(Object o){
-		linkData otherTuple = (linkData)o;
-		return (otherTuple.startLinkString.equalsIgnoreCase(this.startLinkString));
-	}
-	
 	public boolean containsEndLink(String link){
 		return endLinksArrayList.contains(link);
+	}
+	
+	@Override
+	public int hashCode() {
+	    return startLinkString.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o){
+	    if(o instanceof linkData){
+	        String toCompare = ((linkData) o).startLinkString;
+	        return startLinkString.equals(toCompare);
+	    }
+	    return false;
 	}
 }

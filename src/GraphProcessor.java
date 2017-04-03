@@ -19,9 +19,10 @@ public class GraphProcessor {
 	public static void main(String[] args) throws IOException{
 		try{
 			GraphProcessor gp = new GraphProcessor("TestOutput.txt");
+			gp.printReverseGraph();
 		}
 		catch(Exception e){
-			
+			e.printStackTrace();
 		}
 	}
 	/*
@@ -32,7 +33,6 @@ public class GraphProcessor {
 	 * the following public methods run efficiently.
 	 */
 	GraphProcessor(String graphData) throws IOException {
-		graph = new ArrayList<linkData>();
 		generateGraph(graphData);
 		generateReverseGraph();
 		//generateSCCList();
@@ -42,6 +42,7 @@ public class GraphProcessor {
 	 * 
 	 */
 	private void generateGraph(String graphData) throws IOException{
+		graph = new ArrayList<linkData>();
 		File inputFile = new File(graphData);
 		Scanner fileReader = new Scanner(inputFile);
 		String nextLine;
@@ -82,12 +83,38 @@ public class GraphProcessor {
 		}
 	}
 	
+	private void printReverseGraph(){
+		System.out.println(graphSize);
+		for(linkData vertex: reverseGraph){
+			for(String link: vertex.endLinksArrayList){
+				System.out.println(vertex.startLinkString + " " + link);
+			}
+		}
+	}
+	
 	
 	/* Makes the reverse of the other graph.
 	 * Must be called after generateGraph
 	 */
 	private void generateReverseGraph(){
-		
+		reverseGraph = new ArrayList<linkData>();
+		int count = 0;
+		linkData temp;
+		for(linkData vertex: graph){
+			for(String link: vertex.endLinksArrayList){
+				temp = new linkData(link,null);
+				if(reverseGraph.contains(temp)){
+					//System.out.println("This should print a lot");
+					reverseGraph.get(reverseGraph.indexOf(temp)).endLinksArrayList.add(vertex.startLinkString);
+				}
+				else{
+					temp.endLinksArrayList = new ArrayList<String>();
+					//System.out.println(temp.startLinkString);
+					temp.endLinksArrayList.add(vertex.startLinkString);
+					reverseGraph.add(temp);
+				}
+			}
+		}
 	}
 	
 	/* Makes ArrayList of SCCs
