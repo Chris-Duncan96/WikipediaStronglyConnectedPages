@@ -167,7 +167,8 @@ public class WikiCrawler {
 	private static String urlStringToDocString(String urlString) throws IOException{
 		URL url = new URL(urlString);
 		InputStream stream = url.openStream();
-		Scanner scanner = new Scanner(stream).useDelimiter("\\A");
+		Scanner scanner = new Scanner(stream);
+		scanner.useDelimiter("\\A");
 		String stringToReturn = scanner.hasNext() ? scanner.next() : "";
 		stream.close();
 		scanner.close();
@@ -180,7 +181,7 @@ public class WikiCrawler {
 	public static void main(String[] args){
 		
 		long systemTimeStart = System.nanoTime();
-		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 500, "WikiCS.txt");
+		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 5, "reverseTest.txt");
 		wc.crawl();
 		System.out.println((System.nanoTime() - systemTimeStart)/1000000000);
 	}

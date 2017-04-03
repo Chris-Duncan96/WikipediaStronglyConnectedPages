@@ -9,6 +9,11 @@ class linkData{
 		endLinksArrayList = end;
 	}
 	
+	linkData(String start){
+		startLinkString = start;
+		endLinksArrayList = new ArrayList<String>();
+	}
+	
 	public boolean containsEndLink(String link){
 		return endLinksArrayList.contains(link);
 	}
@@ -26,4 +31,45 @@ class linkData{
 	    }
 	    return false;
 	}
+}
+
+final class node extends linkData{
+	private int finishTime;
+	private int outDegree;
+	private boolean flagged;
+	public ArrayList<node> pointsAt;
+	public ArrayList<node> pointedToBy;
+	
+	node(String start) {
+		super(start);
+		flagged = false;
+		pointsAt = new ArrayList<node>();
+		pointedToBy= new ArrayList<node>();
+	}
+	
+	node(String start, ArrayList<String> end){
+		super(start,end);
+		flagged = false;
+		pointsAt = new ArrayList<node>();
+		pointedToBy= new ArrayList<node>();
+	}
+
+	
+	public void flag(){
+		flagged = true;
+	}
+	
+	public boolean isFlagged(){
+		return flagged;
+	}
+	
+	public boolean linkEquals(String input){
+		return (input.equals(this.startLinkString));
+	}
+	
+	public void unflag(){
+		flagged = false;
+	}
+	
+	
 }
