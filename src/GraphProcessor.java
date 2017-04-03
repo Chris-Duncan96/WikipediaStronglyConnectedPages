@@ -7,18 +7,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Collections;
+import java.util.LinkedList;
+
 public class GraphProcessor {
 
 	private ArrayList<linkData> rawData;
 	private ArrayList<node> graph;
 	private ArrayList<node> orderedGraph;
-	private ArrayList<node> reverseGraph;
 	private ArrayList<ArrayList<String>> SCCList;
 	private int graphSize;
+	private LinkedList<node> queueForBFS;
 	
 	public static void main(String[] args) throws IOException{
 		try{
-			GraphProcessor gp = new GraphProcessor("TestOutput.txt");
+			@SuppressWarnings("unused")
+			GraphProcessor gp = new GraphProcessor("WikiCS.txt");
 			//gp.printGraph();
 			//gp.printOrderedGraph();
 			//gp.printReverseGraph();
@@ -39,15 +42,11 @@ public class GraphProcessor {
 		rawData = new ArrayList<linkData>();
 		graph = new ArrayList<node>();
 		orderedGraph = new ArrayList<node>();
-		reverseGraph = new ArrayList<node>();
 		SCCList = new ArrayList<ArrayList<String>>();
 		generateRawData(graphData);
 		generateGraph();
 		orderGraph();
 		makeSCC();
-		//generateReverseGraph();
-		//orderGraph();
-		//generateSCCList();
 	}
 	
 	/* Generates graph based on file data
@@ -72,9 +71,6 @@ public class GraphProcessor {
 			
 			if(null != currentVertex && !currentLineTokens[0].equalsIgnoreCase(currentVertex.startLinkString)){
 				rawData.add(currentVertex);
-				/*for(String string : currentVertex.endLinksArrayList){
-					System.out.println(currentVertex.startLinkString+ " "+ string);
-				}*/
 			}
 			
 			if(null == currentVertex || !currentLineTokens[0].equalsIgnoreCase(currentVertex.startLinkString)){
@@ -93,6 +89,7 @@ public class GraphProcessor {
 		}
 		
 		int index = -1;
+		@SuppressWarnings("unchecked")
 		ArrayList<node> graphCopy = (ArrayList<node>) graph.clone();
 		for(node thisNode : graphCopy){
 			for(String link : thisNode.endLinksArrayList){
@@ -104,8 +101,8 @@ public class GraphProcessor {
 				}
 				else{
 					node tempNode = new node(link);
-					tempNode.pointedToBy.add(thisNode);
-					graph.add(new node(link));
+					thisNode.pointsAt.add(tempNode);
+					graph.add(tempNode);
 				}
 			}
 		}
@@ -114,10 +111,18 @@ public class GraphProcessor {
 	@SuppressWarnings("unused")
 	private void printGraph(){
 		System.out.println(graphSize);
+		int highestEdges = 0;
+		String string = "";
 		for(node vertex: graph){
-			for(String otherNode: vertex.endLinksArrayList)
-				System.out.println(vertex.startLinkString + " " + otherNode);
+			if(vertex.pointsAt.size() > highestEdges) {
+				highestEdges = vertex.pointsAt.size();
+				string = vertex.startLinkString;
+			}
+			
+			//for(String otherNode: vertex.endLinksArrayList) edges++;
+				//System.out.println(vertex.startLinkString + " " + otherNode);
 		}
+		System.out.println(highestEdges + " " + string);
 	}
 	
 	@SuppressWarnings("unused")
@@ -129,15 +134,6 @@ public class GraphProcessor {
 	}
 	
 	@SuppressWarnings("unused")
-	private void printReverseGraph(){
-		System.out.println(graphSize);
-		for(linkData vertex: reverseGraph){
-			for(String link: vertex.endLinksArrayList){
-				System.out.println(vertex.startLinkString + " " + link);
-			}
-		}
-	}
-	
 	private void printSCC(){
 		int count = 1;
 		for(ArrayList<String> SCC : SCCList){
@@ -201,18 +197,16 @@ public class GraphProcessor {
 	/*
 	 * Returns the out degree of v.
 	 */
- 	int outDegree(String v) {//TODO check this works
+ 	int outDegree(String v) {
  		int index = orderedGraph.indexOf(new node(v));
  		node nodeToCheck = orderedGraph.get(index);
- 		for(node toPrint : nodeToCheck.pointsAt)
- 			System.out.println(toPrint.startLinkString);
 		return nodeToCheck.pointsAt.size();
 	}
 	
 	/*
 	 * Returns true if u and v belong to the same SCC.
 	 */
-	boolean sameComponent(String u, String v) {//TODO check this works
+	boolean sameComponent(String u, String v) {
 		for(ArrayList<String> SCC : SCCList){
 			if(SCC.contains(v)){
 				return SCC.contains(u);
@@ -224,7 +218,7 @@ public class GraphProcessor {
 	/*
 	 * Return all the vertices that belong to the same SCC as v, including v.
 	 */
-	ArrayList<String> componentVertices(String v) {//TODO check this works
+	ArrayList<String> componentVertices(String v) {
 		for(ArrayList<String> SCC : SCCList){
 			if(SCC.contains(v)){
 				return SCC;
@@ -236,7 +230,7 @@ public class GraphProcessor {
 	/*
 	 * Returns the size of the largest component.
 	 */
-	int largestComponent() {//TODO check this works
+	int largestComponent() {
 		int largest = -1;
 		for(ArrayList<String> SCC : SCCList){
 			if (largest < SCC.size()){
@@ -249,9 +243,8 @@ public class GraphProcessor {
 	/*
 	 * Returns the number of strongly connected components.
 	 */
-	int numComponents() {//TODO what
-		//return SCCList.size();
-		return 0;
+	int numComponents() {
+		return SCCList.size();
 	}
 	
 	/*
@@ -259,7 +252,58 @@ public class GraphProcessor {
 	 * the BFS path from u to v.  First vertex in the path must be u and the last vertex must be v. If 
 	 * there is no path from u to v, then this method returns an empty list.
 	 */
-	ArrayList<String> bfsPath(String u, String v) {//TODO
-		return null;
+	ArrayList<String> bfsPath(String u, String v) {
+		ArrayList<String> toReturn = new ArrayList<String>();
+		if(u.equalsIgnoreCase(v)){
+			toReturn.add(u);
+			toReturn.add(v);
+			return toReturn;
+		}
+		node startNode = orderedGraph.get(orderedGraph.indexOf(new node(u)));
+		node searchForNode =  orderedGraph.get(orderedGraph.indexOf(new node(v)));
+		queueForBFS = new LinkedList<node>();
+		//System.out.println(startNode.startLinkString);
+		for(node everyNode : orderedGraph){
+			everyNode.DistanceToStartNode = 9999;
+			everyNode.unflag();
+		}
+		startNode.DistanceToStartNode = 0;
+		for(node otherNode : startNode.pointsAt){
+			otherNode.DistanceToStartNode = 1;
+			queueForBFS.offer(otherNode);
+		}
+		
+		node nextNode = startNode;
+				
+		while(!queueForBFS.isEmpty()){
+			nextNode = queueForBFS.poll();
+			if(nextNode.equals(searchForNode)) break;
+			for(node otherNode : nextNode.pointsAt){
+				if(otherNode.DistanceToStartNode > nextNode.DistanceToStartNode){
+					otherNode.DistanceToStartNode = 1 + nextNode.DistanceToStartNode;
+					queueForBFS.offer(otherNode);
+				}
+			}
+		}
+		
+		int index;
+		while(nextNode.DistanceToStartNode != 0){
+			toReturn.add(nextNode.startLinkString);
+			index = 0;
+			node tempNode;
+			do{
+				tempNode = nextNode.pointedToBy.get(index);
+				index++;
+			}while(tempNode.DistanceToStartNode >= nextNode.DistanceToStartNode);
+			nextNode = tempNode;
+		}
+		toReturn.add(nextNode.startLinkString);
+		Collections.reverse(toReturn);
+		
+		for(String s : toReturn){
+			System.out.println(s);
+		}
+		return toReturn;
 	}
+	
 }

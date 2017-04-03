@@ -108,6 +108,7 @@ public class WikiCrawler {
 			if(0 == pagesHitCount %100){
 				try {
 				    Thread.sleep(3000);//MUST WAIT 3 SECONDS PER 100 HITS
+				    //System.out.println("Sleeping");
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
@@ -161,7 +162,6 @@ public class WikiCrawler {
 	}
 	
 	
-	
 	/* Takes a URL, returns the page as a string.
 	 */
 	private static String urlStringToDocString(String urlString) throws IOException{
@@ -181,30 +181,8 @@ public class WikiCrawler {
 	public static void main(String[] args){
 		
 		long systemTimeStart = System.nanoTime();
-		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 5, "reverseTest.txt");
+		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 500, "WikiCS.txt");
 		wc.crawl();
-		System.out.println((System.nanoTime() - systemTimeStart)/1000000000);
+		//System.out.println((System.nanoTime() - systemTimeStart)/1000000000);
 	}
 }
-
-/*
-final class linkData{
-	public String startLinkString;
-	public ArrayList<String> endLinksArrayList;
-	
-	linkData(String start, ArrayList<String> end){
-		startLinkString = start;
-		endLinksArrayList = end;
-	}
-	
-	@Override
-	public boolean equals(Object o){
-		linkData otherTuple = (linkData)o;
-		return (otherTuple.startLinkString.equalsIgnoreCase(this.startLinkString));
-	}
-	
-	public boolean containsEndLink(String link){
-		return endLinksArrayList.contains(link);
-	}
-}
-*/

@@ -34,8 +34,7 @@ class linkData{
 }
 
 final class node extends linkData{
-	private int finishTime;
-	private int outDegree;
+	public int DistanceToStartNode;
 	private boolean flagged;
 	public ArrayList<node> pointsAt;
 	public ArrayList<node> pointedToBy;
@@ -45,6 +44,7 @@ final class node extends linkData{
 		flagged = false;
 		pointsAt = new ArrayList<node>();
 		pointedToBy= new ArrayList<node>();
+		DistanceToStartNode = -1;
 	}
 	
 	node(String start, ArrayList<String> end){
@@ -52,6 +52,7 @@ final class node extends linkData{
 		flagged = false;
 		pointsAt = new ArrayList<node>();
 		pointedToBy= new ArrayList<node>();
+		DistanceToStartNode = -1;
 	}
 
 	
