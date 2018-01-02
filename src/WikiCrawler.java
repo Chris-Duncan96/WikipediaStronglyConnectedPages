@@ -1,7 +1,3 @@
-/**
- * @author Eric Rysavy, Chris Duncan
- */
-
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +39,8 @@ public class WikiCrawler {
 	
 	/*
 	 * Gets a string that represents the contents of a .html file as
-	 * a parameter. Should return an ArrayList of Strings consisting
-	 * of links from the doc. Method must:
+	 * a parameter. Return an ArrayList of Strings consisting
+	 * of links from the doc. Function does the following
 	 * 1. Extract only wiki links, I.e. only links that are of form /wiki/XXXXX.
 	 * 2. Only extract links that appear after the first occurence of the html tag <p> or <P>.
 	 * 3. Should not extract any wiki link that contains the characters "#" or ":".
@@ -84,11 +80,6 @@ public class WikiCrawler {
 		return list;
 	}
 	
-	/*
-	 * This method should construct the web graph over following pages: Consider the first
-	 * max many pages that are visited when you do a BFS with seedUrl. Your program should construct
-	 * the web graph only over those pages. and writes the graph to the file fileName.
-	 */
 	void crawl(){
 		amassData();
 		parseData();
@@ -108,7 +99,6 @@ public class WikiCrawler {
 			if(0 == pagesHitCount %100){
 				try {
 				    Thread.sleep(3000);//MUST WAIT 3 SECONDS PER 100 HITS
-				    //System.out.println("Sleeping");
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
@@ -128,7 +118,6 @@ public class WikiCrawler {
 	private void parseData(){
 		ArrayList<String> toRemove;
 		for(linkData dataBlock: visitedUrlData){
-			//System.out.println(dataBlock.startLinkString);
 			toRemove = new ArrayList<String>();
 			for(String link : dataBlock.endLinksArrayList){
 				if(!vistedUrls.contains(link) || link.equalsIgnoreCase(dataBlock.startLinkString)){
@@ -148,6 +137,7 @@ public class WikiCrawler {
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	private void visitUrl(String url) throws IOException{
 		vistedUrls.add(url);
 		ArrayList<String> links;
@@ -179,10 +169,7 @@ public class WikiCrawler {
 	/*Main just for testing. Remove when finished.
 	 */
 	public static void main(String[] args){
-		
-		long systemTimeStart = System.nanoTime();
-		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 500, "WikiCS.txt");
+		WikiCrawler wc = new WikiCrawler("/wiki/Computer_science", 10, "TestOutput.txt");
 		wc.crawl();
-		//System.out.println((System.nanoTime() - systemTimeStart)/1000000000);
 	}
 }

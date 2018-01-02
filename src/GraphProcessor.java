@@ -1,7 +1,3 @@
-/**
- * @author Eric Rysavy, Chris Duncan
- */
-
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +18,6 @@ public class GraphProcessor {
 		try{
 			@SuppressWarnings("unused")
 			GraphProcessor gp = new GraphProcessor("WikiCS.txt");
-			//gp.printGraph();
-			//gp.printOrderedGraph();
-			//gp.printReverseGraph();
-			//gp.printSCC();
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -33,10 +25,9 @@ public class GraphProcessor {
 	}
 	/*
 	 * Constructor. graphData holds the absolute path of a file that stores a directed graph. 
-	 * This file will be of the following format: First line indicates number of vertices.
+	 * This file is of the following format: First line indicates number of vertices.
 	 * Each subsequent line lists a directed edge of the graph. The vertices of this graph 
-	 * are represented as strings. This class should create efficient data structures so that 
-	 * the following public methods run efficiently.
+	 * are represented as strings. 
 	 */
 	GraphProcessor(String graphData) throws IOException {
 		rawData = new ArrayList<linkData>();
@@ -118,9 +109,6 @@ public class GraphProcessor {
 				highestEdges = vertex.pointsAt.size();
 				string = vertex.startLinkString;
 			}
-			
-			//for(String otherNode: vertex.endLinksArrayList) edges++;
-				//System.out.println(vertex.startLinkString + " " + otherNode);
 		}
 		System.out.println(highestEdges + " " + string);
 	}
@@ -262,7 +250,6 @@ public class GraphProcessor {
 		node startNode = orderedGraph.get(orderedGraph.indexOf(new node(u)));
 		node searchForNode =  orderedGraph.get(orderedGraph.indexOf(new node(v)));
 		queueForBFS = new LinkedList<node>();
-		//System.out.println(startNode.startLinkString);
 		for(node everyNode : orderedGraph){
 			everyNode.DistanceToStartNode = 9999;
 			everyNode.unflag();
